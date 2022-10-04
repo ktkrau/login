@@ -1,8 +1,9 @@
-from flask import render_template, redirect, request, session
+from flask import render_template, redirect, request, session, flash
 from flask_app import app
 
 from flask_app.models.users import User
 from flask_bcrypt import Bcrypt
+
 bcrypt = Bcrypt(app)
 
 @app.route('/')
@@ -31,14 +32,39 @@ def register():
     session['user_id'] = id #guardamos en session el identificador del usuario
     return redirect('/dashboard')
 
-#pendiente guardar registro
+@app.route('/login', methods=['POST'])
+def login():
+    #verificamos que el email exista en la base de datos
+    user = User.get_by_email(request.form) #1.Recibimos falso 2. recibimos una instancia de usuario
+    if not user: #si user es = a falso
+        flash('E-mail no encontrado', 'login')
+        return redirect('/')
+
+    #user es una instancia con todos los datos de mi usuario
+    #como verificamos que el password está correcto o no: check_password_hash // funcion de bcrypt
+    if not bcrypt.check_password_hash(user.password, request.form['password']):
+        flash('Password incorrecto', 'login')
+        return redirect('/')
+
+    session['user_id'] = user.id
+    return redirect('/dashboard')
+
 
 @app.route('/dashboard')
 def dashboard():
-    #pendiente validar que si se haya iniciado sesion o registrarme
-    return render_template('dashboard.html')
+    if 'user_id' not in session:
+        return redirect('/')
+    #Yo sé que en sesión tengo el id de mi usuario(sesson[user_id])
+    #Queremos una funcion que en base a ese id me regrese una instancia del usuario
+    formulario = {"id": session["user_id"]}
+
+    user = User.get_by_id(formulario) #Recibo la instancia de usuario en base a su id
+
+    return render_template('dashboard.html', user = user)
 
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
 
-
-    

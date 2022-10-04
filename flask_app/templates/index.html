@@ -9,6 +9,7 @@
 </head>
 <body>
     <div class="container">
+        <div class="row">
         <div class="col-6">
             {% with messages = get_flashed_messages(category_filter=['registro']) %}
                 {% if messages %}
@@ -46,8 +47,30 @@
                 <input type="submit" value="Registrarme" class="btn btn-info">
             </form>
         </div>
-        <div class="col-6"></div>
-
+        <div class="col-6">
+            <h2>Inicia Sesión</h2>
+            {% with messages = get_flashed_messages(category_filter=['login']) %}
+                {% if messages %}
+                    <div class="alert alert-danger">
+                        {% for message in messages %}
+                            <p>{{message}}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="email2">Email</label>
+                    <input type="email" id="email2" name="email" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="password2">Contraseña</label>
+                    <input type="password" id="password2" name="password" class="form-control">
+                </div>
+                <input type="submit" value="Iniciar Sesión" class="btn btn-primary">
+            </form>
+        </div>
+</div>
     </div>
 </body>
 </html>

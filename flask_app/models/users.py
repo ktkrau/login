@@ -53,3 +53,25 @@ class User:
         query = "INSERT INTO users (first_name, last_name, email, password) VALUES (%(first_name)s, %(last_name)s, %(email)s, %(password)s) "
         result = connectToMySQL('login_registro').query_db(query, formulario)
         return result 
+
+    @classmethod
+    def get_by_email(cls, formulario):
+        #formulario = {email: elena@coding.com, password: 3332423}
+        query = "SELECT * FROM users WHERE email = %(email)s"
+        result = connectToMySQL('login_registro').query_db(query, formulario)# SELECT regresa siempre una lista, si no existe es una lista vacia, el usuario 0 es el que inicia sesion
+        if len(result) < 1: #significa que mi lista está vacía entonces no existe ese email
+            return False
+        else:
+            #me regresa una lista con 1 registro correspondiente al usuario de ese email
+            #[
+            # {id:1; email: ewewkjw, password: djkdwj}] tengo que transformarlo en instancia:
+            user = cls(result[0])
+            return user
+    @classmethod
+    def get_by_id(cls, formulario):
+        #formulario: DICCIONARIO {id:3}
+        query = "SELECT * FROM users where id = %(id)s"
+        result = connectToMySQL('login_registro').query_db(query, formulario)
+        user = cls(result[0]) #creamos una instancia de User
+        return user
+        
